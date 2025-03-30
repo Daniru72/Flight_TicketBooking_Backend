@@ -29,7 +29,7 @@ public class Verification extends HttpServlet {
        
         Gson gson = new Gson();
         
-         JsonObject requestobject = gson.fromJson(req.getReader(), JsonObject.class);
+        JsonObject requestobject = gson.fromJson(req.getReader(), JsonObject.class);
         
          String verification = requestobject.get("verification").getAsString();
          String email = requestobject.get("email").getAsString();
