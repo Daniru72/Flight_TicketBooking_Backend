@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.HibernateUtil;
+import model.Mail;
 import model.Validation;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -27,6 +28,7 @@ public class Signup extends HttpServlet {
         Gson gson = new Gson();
         JsonObject requestobject = gson.fromJson(req.getReader(), JsonObject.class);
         JsonObject responseJson = new JsonObject();
+        responseJson.addProperty("Success", Boolean.FALSE);
 
         String fname = requestobject.get("fname").getAsString();
         String lname = requestobject.get("lname").getAsString();
@@ -67,7 +69,7 @@ public class Signup extends HttpServlet {
 
                 Session session = HibernateUtil.getSessionFactory().openSession();
 
-                Criteria criteria1 = session.createCriteria(Signup.class);
+                Criteria criteria1 = session.createCriteria(User.class);
                 criteria1.add(Restrictions.eq("email", email));
 
                 if (!criteria1.list().isEmpty()) {
@@ -75,8 +77,11 @@ public class Signup extends HttpServlet {
                     responseJson.addProperty("message", "User already registerd");
                 } else {
                     //New user
+                    
+                    //generate verification code
+                    int code = (int) (Math.random() * 100000);
 
-                    User user = new User();
+                    final User user = new User();
                     user.setEmail(email);
                     user.setFname(fname);
                     user.setLname(lname);
@@ -86,6 +91,24 @@ public class Signup extends HttpServlet {
 
                     Status status = (Status) session.get(Status.class, 1);
                     user.setUser_Status(status);
+                    
+                    user.setVerification(String.valueOf(code));
+                    
+                     //send verification code
+                Thread sendMailThread = new Thread(){
+                    @Override
+                    public void run() {
+                        Mail.sendMail(user.getEmail(),"SKYBIRD Verification", "<h1>Your Verification Code: "+user.getVerification()+"</h1>");
+                    }
+                  
+                    
+                
+                };
+//               sendMailThread.start();
+
+                session.save(user);
+                session.beginTransaction().commit();
+                responseJson.addProperty("Success", Boolean.TRUE);
 
                 }
                 
@@ -93,6 +116,7 @@ public class Signup extends HttpServlet {
 
             } catch (Exception e) {
                 responseJson.addProperty("message", "Server side Error");
+                e.printStackTrace();
             }
 
         }
