@@ -35,7 +35,7 @@ public class Verification extends HttpServlet {
          String email = requestobject.get("email").getAsString();
         
          JsonObject responseJson = new JsonObject();
-        responseJson.addProperty("Success", Boolean.FALSE);
+        responseJson.addProperty("Success", "false");
         
         if(email.isEmpty()){
            responseJson.addProperty("message", "empty email");
@@ -59,8 +59,8 @@ public class Verification extends HttpServlet {
              
              session.update(user);
              session.beginTransaction().commit();
-              responseJson.addProperty("Success", Boolean.TRUE);
-              responseJson.addProperty("message", "registered Successfil");
+              responseJson.addProperty("Success", "true");
+              responseJson.addProperty("message", "Verification Successfil");
               
              
           }else{

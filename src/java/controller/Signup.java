@@ -28,7 +28,7 @@ public class Signup extends HttpServlet {
         Gson gson = new Gson();
         JsonObject requestobject = gson.fromJson(req.getReader(), JsonObject.class);
         JsonObject responseJson = new JsonObject();
-        responseJson.addProperty("Success", Boolean.FALSE);
+        responseJson.addProperty("Success", "false");
 
         String fname = requestobject.get("fname").getAsString();
         String lname = requestobject.get("lname").getAsString();
@@ -104,11 +104,12 @@ public class Signup extends HttpServlet {
                     
                 
                 };
-//               sendMailThread.start();
+               sendMailThread.start();
 
                 session.save(user);
                 session.beginTransaction().commit();
-                responseJson.addProperty("Success", Boolean.TRUE);
+                responseJson.addProperty("Success", "true");
+                 responseJson.addProperty("userEmail", String.valueOf(user.getEmail()));
 
                 }
                 
