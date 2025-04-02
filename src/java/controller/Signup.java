@@ -38,19 +38,12 @@ public class Signup extends HttpServlet {
 
         if (fname.isEmpty()) {
             responseJson.addProperty("message", "Fill your First name");
-        } else if (fname.length() < 45) {
+        } else if (fname.length() > 45) {
             responseJson.addProperty("message", "Firstname must be lower than 45 caractors");
-        } else if (!fname.matches("[a-zA-Z]+")) {
-            responseJson.addProperty("message", "First name accept only letters");
-            // Validate first name for being non-blank and alphabetic only
-        } else if (lname.isEmpty()) {
+        }  else if (lname.isEmpty()) {
             responseJson.addProperty("message", "Fill your Lirst name");
-        } else if (lname.length() < 45) {
+        } else if (lname.length() > 45) {
             responseJson.addProperty("message", "Lastname must be lower than 45 caractores");
-        } else if (!lname.matches("[a-zA-Z]+")) {
-            responseJson.addProperty("message", "First name accept only letters");
-            // Validate first name for being non-blank and alphabetic only
-
         } else if (email.isEmpty()) {
             responseJson.addProperty("message", "Fill your Email address");
         }else if (!Validation.isEmailValid(email)) {
@@ -61,7 +54,7 @@ public class Signup extends HttpServlet {
             responseJson.addProperty("message", "Invalide Mobile Number");
         }else if (password.isEmpty()) {
             responseJson.addProperty("message", "Fill your password");
-        } else if (password.length() >= 5) {
+        } else if (password.length() <= 5) {
             responseJson.addProperty("message", "password must be grater than 5 caractors");
         } else {
 
@@ -95,7 +88,7 @@ public class Signup extends HttpServlet {
                     user.setVerification(String.valueOf(code));
                     
                      //send verification code
-                Thread sendMailThread = new Thread(){
+                 new Thread(){
                     @Override
                     public void run() {
                         Mail.sendMail(user.getEmail(),"SKYBIRD Verification", "<h1>Your Verification Code: "+user.getVerification()+"</h1>");
@@ -103,8 +96,7 @@ public class Signup extends HttpServlet {
                   
                     
                 
-                };
-               sendMailThread.start();
+                }.start();
 
                 session.save(user);
                 session.beginTransaction().commit();

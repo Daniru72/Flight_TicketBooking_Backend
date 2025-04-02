@@ -31,10 +31,19 @@ public class Verification extends HttpServlet {
         
         JsonObject requestobject = gson.fromJson(req.getReader(), JsonObject.class);
         
+         JsonObject responseJson = new JsonObject();
+        
+        if (!requestobject.has("verification") || !requestobject.has("email")) {
+    responseJson.addProperty("message", "Missing email or verification key");
+    resp.setContentType("application/json");
+    resp.getWriter().write(gson.toJson(responseJson));
+    return;
+}
+        
          String verification = requestobject.get("verification").getAsString();
          String email = requestobject.get("email").getAsString();
         
-         JsonObject responseJson = new JsonObject();
+        
         responseJson.addProperty("Success", "false");
         
         if(email.isEmpty()){
@@ -46,6 +55,7 @@ public class Verification extends HttpServlet {
             try {
                
                Session session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
           
             Criteria criteria1 = session.createCriteria(User.class);
             criteria1.add(Restrictions.eq("email", email));
@@ -58,13 +68,13 @@ public class Verification extends HttpServlet {
              user.setVerification("Verified");
              
              session.update(user);
-             session.beginTransaction().commit();
+              session.getTransaction().commit();
               responseJson.addProperty("Success", "true");
               responseJson.addProperty("message", "Verification Successfil");
               
              
           }else{
-          responseJson.addProperty("message", "Empty email and verification");
+          responseJson.addProperty("message", "Invalied verification");
           
           }
           

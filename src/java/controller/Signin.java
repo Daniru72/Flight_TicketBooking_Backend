@@ -27,7 +27,7 @@ public class Signin extends HttpServlet {
         JsonObject requestobject = gson.fromJson(req.getReader(), JsonObject.class);
 
         JsonObject responseJson = new JsonObject();
-        responseJson.addProperty("Success", Boolean.FALSE);
+        responseJson.addProperty("Success", "false");
 
         String email = requestobject.get("email").getAsString();
         String password = requestobject.get("password").getAsString();
@@ -38,7 +38,7 @@ public class Signin extends HttpServlet {
             responseJson.addProperty("message", "Invalide Email address");
         } else if (password.isEmpty()) {
             responseJson.addProperty("message", "Fill your password");
-        } else if (password.length() >= 5) {
+        } else if (password.length() <= 5) {
             responseJson.addProperty("message", "password must be grater than 5 caractors");
         } else {
 
@@ -60,7 +60,7 @@ public class Signin extends HttpServlet {
 
                         responseJson.addProperty("message", "userlogin");
                         responseJson.add("user", gson.toJsonTree(user));
-                        responseJson.addProperty("Success", Boolean.TRUE);
+                        responseJson.addProperty("Success", "true");
 
                     } else {
                         //unverified user
